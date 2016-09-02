@@ -91,7 +91,7 @@ public class CoolWeatherDB {
     }
 
     //将county实例存储在数据库
-    public void saveCity(County county){
+    public void saveCounty(County county){
         if(county!=null) {
             ContentValues values = new ContentValues();
             values.put("county_name",county.getCountName());
