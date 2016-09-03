@@ -2,7 +2,10 @@ package com.coolweather.app.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -20,6 +23,7 @@ import com.coolweather.app.model.Province;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +51,23 @@ public class ChooseAreaActivity extends Activity{
     //当前选中的级别
     private int currentLevel;
 
+    //是否是从WeatherActivity中跳转过来的
+    private boolean isFromWeatherActivity;
+
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        isFromWeatherActivity=getIntent().getBooleanExtra("from_weather_activity",false);
+
+        //读取sharepreference文件，若已选择城市则直接跳转到显示天气界面
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        if(prefs.getBoolean("city_selected",false)&&!isFromWeatherActivity){
+            Intent intent=new Intent(this,WeatherActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.choose_area);
         listView=(ListView) findViewById(R.id.list_view);
@@ -65,6 +84,13 @@ public class ChooseAreaActivity extends Activity{
                 }else if(currentLevel==LEVEL_CITY){
                     selectedCity=cityList.get(position);
                     queryCounty();
+                }else if(currentLevel==LEVEL_COUNTY){
+                    //如果点击了县则显示天气
+                    String countyCode=countyList.get(position).getCountCode();
+                    Intent intent=new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+                    intent.putExtra("county_code",countyCode);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -145,6 +171,8 @@ public class ChooseAreaActivity extends Activity{
                     result=Utility.handleCityResponse(coolWeatherDB,response,selectedProvince.getId());
                 }else if("county".equals(type)){
                     result=Utility.handleCountyResponse(coolWeatherDB,response,selectedCity.getId());
+
+
                 }
 
                 if(result){
@@ -203,6 +231,11 @@ public class ChooseAreaActivity extends Activity{
         }else if(currentLevel==LEVEL_CITY){
             queryProvince();
         }else {
+
+            if(isFromWeatherActivity){
+                Intent intent=new Intent(this,WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
     }
