@@ -78,12 +78,13 @@ public class ChooseAreaActivity extends Activity{
             dataList.clear();
             for(Province province:provinceList){
                 dataList.add(province.getProvinceName());
-                adapter.notifyDataSetChanged();
-                listView.setSelection(0);
-                titleText.setText("中国");
-                currentLevel=LEVEL_PROVINCE;
 
             }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            titleText.setText("中国");
+            currentLevel=LEVEL_PROVINCE;
+
         }else {
             queryFromServer(null,"province");
         }
@@ -97,11 +98,12 @@ public class ChooseAreaActivity extends Activity{
             dataList.clear();
             for(City city:cityList){
                 dataList.add(city.getCityName());
-                adapter.notifyDataSetChanged();
-                listView.setSelection(0);
-                titleText.setText(selectedProvince.getProvinceName());
-                currentLevel=LEVEL_CITY;
+
             }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            titleText.setText(selectedProvince.getProvinceName());
+            currentLevel=LEVEL_CITY;
         }else {
             queryFromServer(selectedProvince.getProvinceCode(),"city");
         }
@@ -113,11 +115,12 @@ public class ChooseAreaActivity extends Activity{
             dataList.clear();
             for(County county:countyList){
                 dataList.add(county.getCountName());
-                adapter.notifyDataSetChanged();
-                listView.setSelection(0);
-                titleText.setText(selectedCity.getCityName());
-                currentLevel=LEVEL_COUNTY;
+
             }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            titleText.setText(selectedCity.getCityName());
+            currentLevel=LEVEL_COUNTY;
         }else{
             queryFromServer(selectedCity.getCityCode(),"county");
         }
@@ -125,7 +128,7 @@ public class ChooseAreaActivity extends Activity{
     //根据传入的代号从服务器查询数据
     private void queryFromServer(final String code, final String type) {
         String address;
-        if(TextUtils.isEmpty(code)){
+        if(!TextUtils.isEmpty(code)){
             address="http://www.weather.com.cn/data/list3/city"+code+".xml";
 
         }else {
